@@ -1,0 +1,96 @@
+
+application {
+  config {
+    baseName Snippeter,
+    applicationType monolith,
+    packageName com.mbeliakov.snippeter,
+    authenticationType jwt,
+    prodDatabaseType postgresql,
+    dtoSuffix Model,
+    skipClient true
+  }
+  entities *
+}
+
+
+entity LangType {
+	code String required
+}
+
+entity Vendor {
+	code String required,
+    name String required,
+    isActive Boolean required
+}
+
+entity CommonProperty {
+	code String required,
+    value TextBlob required
+}
+
+entity Project {
+	code String required,
+    name String required,
+    status Boolean required
+}
+
+entity ProjectChapter {
+	code String required,
+    name String required,
+    type String
+}
+
+entity Snippet {
+	langType String,
+    title String required,
+    description String,
+    text TextBlob required,
+    cts Instant required
+}
+
+entity SnippetSection {
+	langType String,
+    title String required,
+    description String,
+    text TextBlob required,
+    cts Instant required,
+    orderPosition Integer required,
+    status Boolean required
+}
+
+//relationship OneToOne {
+//	Country{region} to Region
+//}
+
+//relationship OneToOne {}
+
+//relationship OneToOne {
+//	Department{location} to Location
+//}
+
+//relationship ManyToMany {}
+
+// defining multiple OneToMany relationships with comments
+//relationship OneToMany {}
+
+relationship ManyToOne {
+	Project{vendor} to Vendor,
+    ProjectChapter{project} to Project,
+    Snippet{projectChapter} to ProjectChapter,
+    SnippetSection{snippet} to Snippet
+}
+
+// defining multiple oneToOne relationships
+relationship OneToOne {
+	JobHistory{job} to Job,
+	JobHistory{department} to Department,
+	JobHistory{employee} to Employee
+}
+
+// Use Data Transfer Objects (DTO)
+dto all with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+
+    
