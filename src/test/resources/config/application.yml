@@ -18,7 +18,7 @@ spring:
     # Uncomment the following line to enable tests against production database type rather than H2, using Testcontainers
     #active: testcontainers
   application:
-    name: snippeter
+    name: Snippeter
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:h2:mem:snippeter;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE

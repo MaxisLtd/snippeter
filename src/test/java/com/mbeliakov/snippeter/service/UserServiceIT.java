@@ -7,7 +7,7 @@ import com.mbeliakov.snippeter.IntegrationTest;
 import com.mbeliakov.snippeter.config.Constants;
 import com.mbeliakov.snippeter.domain.User;
 import com.mbeliakov.snippeter.repository.UserRepository;
-import com.mbeliakov.snippeter.service.dto.AdminUserDTO;
+import com.mbeliakov.snippeter.service.dto.AdminUserModel;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
