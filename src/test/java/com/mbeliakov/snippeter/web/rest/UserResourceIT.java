@@ -11,8 +11,8 @@ import com.mbeliakov.snippeter.domain.Authority;
 import com.mbeliakov.snippeter.domain.User;
 import com.mbeliakov.snippeter.repository.UserRepository;
 import com.mbeliakov.snippeter.security.AuthoritiesConstants;
-import com.mbeliakov.snippeter.service.dto.AdminUserDTO;
-import com.mbeliakov.snippeter.service.dto.UserDTO;
+import com.mbeliakov.snippeter.service.dto.AdminUserModel;
+import com.mbeliakov.snippeter.service.dto.UserModel;
 import com.mbeliakov.snippeter.service.mapper.UserMapper;
 import com.mbeliakov.snippeter.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -70,9 +71,18 @@ class UserResourceIT {
     private EntityManager em;
 
     @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
     private MockMvc restUserMockMvc;
 
     private User user;
+
+    @BeforeEach
+    public void setup() {
+        cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
+        cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
+    }
 
     /**
      * Create a User.
@@ -257,6 +267,8 @@ class UserResourceIT {
         // Initialize the database
         userRepository.saveAndFlush(user);
 
+        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
+
         // Get the user
         restUserMockMvc
             .perform(get("/api/admin/users/{login}", user.getLogin()))
@@ -268,6 +280,8 @@ class UserResourceIT {
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGEURL))
             .andExpect(jsonPath("$.langKey").value(DEFAULT_LANGKEY));
+
+        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNotNull();
     }
 
     @Test
@@ -467,6 +481,8 @@ class UserResourceIT {
             .perform(delete("/api/admin/users/{login}", user.getLogin()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
+        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
+
         // Validate the database is empty
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeDelete - 1));
     }
@@ -487,7 +503,7 @@ class UserResourceIT {
 
     @Test
     void testUserDTOtoUser() {
-        AdminUserDTO userDTO = new AdminUserDTO();
+        AdminUserModel userDTO = new AdminUserModel();
         userDTO.setId(DEFAULT_ID);
         userDTO.setLogin(DEFAULT_LOGIN);
         userDTO.setFirstName(DEFAULT_FIRSTNAME);
@@ -529,7 +545,7 @@ class UserResourceIT {
         authorities.add(authority);
         user.setAuthorities(authorities);
 
-        AdminUserDTO userDTO = userMapper.userToAdminUserDTO(user);
+        AdminUserModel userDTO = userMapper.userToAdminUserDTO(user);
 
         assertThat(userDTO.getId()).isEqualTo(DEFAULT_ID);
         assertThat(userDTO.getLogin()).isEqualTo(DEFAULT_LOGIN);

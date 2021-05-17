@@ -12,9 +12,9 @@ import com.mbeliakov.snippeter.repository.AuthorityRepository;
 import com.mbeliakov.snippeter.repository.UserRepository;
 import com.mbeliakov.snippeter.security.AuthoritiesConstants;
 import com.mbeliakov.snippeter.service.UserService;
-import com.mbeliakov.snippeter.service.dto.AdminUserDTO;
+import com.mbeliakov.snippeter.service.dto.AdminUserModel;
 import com.mbeliakov.snippeter.service.dto.PasswordChangeDTO;
-import com.mbeliakov.snippeter.service.dto.UserDTO;
+import com.mbeliakov.snippeter.service.dto.UserModel;
 import com.mbeliakov.snippeter.web.rest.vm.KeyAndPasswordVM;
 import com.mbeliakov.snippeter.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
@@ -85,7 +85,7 @@ class AccountResourceIT {
         Set<String> authorities = new HashSet<>();
         authorities.add(AuthoritiesConstants.ADMIN);
 
-        AdminUserDTO user = new AdminUserDTO();
+        AdminUserModel user = new AdminUserModel();
         user.setLogin(TEST_USER_LOGIN);
         user.setFirstName("john");
         user.setLastName("doe");
@@ -344,7 +344,7 @@ class AccountResourceIT {
         assertThat(testUser4.get().getEmail()).isEqualTo("test-register-duplicate-email@example.com");
 
         testUser4.get().setActivated(true);
-        userService.updateUser((new AdminUserDTO(testUser4.get())));
+        userService.updateUser((new AdminUserModel(testUser4.get())));
 
         // Register 4th (already activated) user
         restAccountMockMvc
@@ -413,7 +413,7 @@ class AccountResourceIT {
         user.setActivated(true);
         userRepository.saveAndFlush(user);
 
-        AdminUserDTO userDTO = new AdminUserDTO();
+        AdminUserModel userDTO = new AdminUserModel();
         userDTO.setLogin("not-used");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
@@ -450,7 +450,7 @@ class AccountResourceIT {
 
         userRepository.saveAndFlush(user);
 
-        AdminUserDTO userDTO = new AdminUserDTO();
+        AdminUserModel userDTO = new AdminUserModel();
         userDTO.setLogin("not-used");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
@@ -486,7 +486,7 @@ class AccountResourceIT {
 
         userRepository.saveAndFlush(anotherUser);
 
-        AdminUserDTO userDTO = new AdminUserDTO();
+        AdminUserModel userDTO = new AdminUserModel();
         userDTO.setLogin("not-used");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
@@ -515,7 +515,7 @@ class AccountResourceIT {
         user.setActivated(true);
         userRepository.saveAndFlush(user);
 
-        AdminUserDTO userDTO = new AdminUserDTO();
+        AdminUserModel userDTO = new AdminUserModel();
         userDTO.setLogin("not-used");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");

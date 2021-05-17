@@ -5,9 +5,9 @@ import com.mbeliakov.snippeter.repository.UserRepository;
 import com.mbeliakov.snippeter.security.SecurityUtils;
 import com.mbeliakov.snippeter.service.MailService;
 import com.mbeliakov.snippeter.service.UserService;
-import com.mbeliakov.snippeter.service.dto.AdminUserDTO;
+import com.mbeliakov.snippeter.service.dto.AdminUserModel;
 import com.mbeliakov.snippeter.service.dto.PasswordChangeDTO;
-import com.mbeliakov.snippeter.service.dto.UserDTO;
+import com.mbeliakov.snippeter.service.dto.UserModel;
 import com.mbeliakov.snippeter.web.rest.errors.*;
 import com.mbeliakov.snippeter.web.rest.vm.KeyAndPasswordVM;
 import com.mbeliakov.snippeter.web.rest.vm.ManagedUserVM;
@@ -99,10 +99,10 @@ public class AccountResource {
      * @throws RuntimeException {@code 500 (Internal Server Error)} if the user couldn't be returned.
      */
     @GetMapping("/account")
-    public AdminUserDTO getAccount() {
+    public AdminUserModel getAccount() {
         return userService
             .getUserWithAuthorities()
-            .map(AdminUserDTO::new)
+            .map(AdminUserModel::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 
@@ -114,7 +114,7 @@ public class AccountResource {
      * @throws RuntimeException {@code 500 (Internal Server Error)} if the user login wasn't found.
      */
     @PostMapping("/account")
-    public void saveAccount(@Valid @RequestBody AdminUserDTO userDTO) {
+    public void saveAccount(@Valid @RequestBody AdminUserModel userDTO) {
         String userLogin = SecurityUtils
             .getCurrentUserLogin()
             .orElseThrow(() -> new AccountResourceException("Current user login not found"));
